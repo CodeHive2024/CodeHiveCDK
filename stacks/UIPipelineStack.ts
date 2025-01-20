@@ -4,17 +4,17 @@ import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as cpactions from "aws-cdk-lib/aws-codepipeline-actions";
 import * as codebuild from "aws-cdk-lib/aws-codebuild";
 
-export class BackendPipelineStack extends cdk.Stack {
+export class UIPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Import Elastic Beanstalk Application and Environment Names from the BackendStack
-    const ebAppName = cdk.Fn.importValue("EBAppName");
-    const ebEnvName = cdk.Fn.importValue("EBEnvName");
+    const ebAppName = cdk.Fn.importValue("UIEBAppName");
+    const ebEnvName = cdk.Fn.importValue("UIEBEnvName");
 
     // CodePipeline
     const pipeline = new codepipeline.Pipeline(this, "Pipeline", {
-      pipelineName: "BackendPipeline",
+      pipelineName: "UIPipeline",
     });
 
     const sourceOutput = new codepipeline.Artifact();
@@ -24,7 +24,7 @@ export class BackendPipelineStack extends cdk.Stack {
         new cpactions.GitHubSourceAction({
           actionName: "GitHub_Source",
           owner: "CodeHive2024", // Replace with your GitHub username
-          repo: "CodeHiveBackend", // Replace with your repository name
+          repo: "CodeHiveUI", // Replace with your repository name
           oauthToken: cdk.SecretValue.secretsManager("github-token"), // GitHub token stored in Secrets Manager
           output: sourceOutput,
           branch: "main", // Replace with your branch name

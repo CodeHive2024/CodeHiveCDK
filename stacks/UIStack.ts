@@ -8,13 +8,13 @@ import {
   InstanceProfile,
 } from "aws-cdk-lib/aws-iam";
 
-export class BackendStack extends cdk.Stack {
+export class UIStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const ebRole = new Role(this, "elasticbeanstalk-ec2-role", {
+    const ebRole = new Role(this, "elasticbeanstalk-ec2-role-2", {
       assumedBy: new ServicePrincipal("ec2.amazonaws.com"),
-      roleName: "elasticbeanstalk-ec2-role",
+      roleName: "elasticbeanstalk-ec2-role-2",
     });
 
     // some managed policies eb must have
@@ -38,25 +38,25 @@ export class BackendStack extends cdk.Stack {
     // Create instance profile
     const instanceProfile = new InstanceProfile(this, "InstanceProfile", {
       role: ebRole,
-      instanceProfileName: "eb-instance-profile",
+      instanceProfileName: "eb-instance-profile-2",
     });
 
     /// create eb
 
     new cdk.CfnOutput(this, "ServiceAccountIamRole", { value: roleARN });
 
-    const cognitoAppClientId = cdk.Fn.importValue("CognitoAppClientId"); // Import the value from CloudFormation output
+    const backendURL = cdk.Fn.importValue("BACKEND_URL"); // Import the value from CloudFormation output
 
-    console.log("from cfn output", cognitoAppClientId);
+    console.log("from cfn output", backendURL);
 
     // Define the Elastic Beanstalk Application
-    const app = new eb.CfnApplication(this, "MyEBApp", {
-      applicationName: "Backend",
+    const app = new eb.CfnApplication(this, "MyUIApp", {
+      applicationName: "UI",
     });
 
     // Define the Elastic Beanstalk Environment
-    const env = new eb.CfnEnvironment(this, "MyEBEnv", {
-      environmentName: "BackendEnv",
+    const env = new eb.CfnEnvironment(this, "MyUIEnv", {
+      environmentName: "UIEnv",
       applicationName: app.applicationName!,
       solutionStackName: "64bit Amazon Linux 2 v5.9.10 running Node.js 18", // Example solution stack (can vary)
       optionSettings: [
@@ -67,8 +67,8 @@ export class BackendStack extends cdk.Stack {
         },
         {
           namespace: "aws:elasticbeanstalk:application:environment",
-          optionName: "COGNITO_APP_CLIENT_ID",
-          value: cognitoAppClientId, // Pass the Cognito App Client ID as an environment variable
+          optionName: "BACKEND_URL",
+          value: backendURL, // Pass the Cognito App Client ID as an environment variable
         },
         {
           namespace: "aws:elasticbeanstalk:application:environment",
@@ -88,12 +88,6 @@ export class BackendStack extends cdk.Stack {
     new cdk.CfnOutput(this, "EBEnvName", {
       value: env.environmentName!,
       exportName: "EBEnvName",
-    });
-
-    // Export the Elastic Beanstalk environment URL
-    new cdk.CfnOutput(this, "BACKEND_URL", {
-      value: `http://${env.attrEndpointUrl}`, // URL is available as 'attrEndpointURL'
-      exportName: "BACKEND_URL", // Export it to be used in other stacks (like your pipeline)
     });
   }
 }
