@@ -91,9 +91,9 @@ export class BackendStack extends cdk.Stack {
     });
 
     // Export the Elastic Beanstalk environment URL
-    new cdk.CfnOutput(this, "BACKEND_URL", {
+    new cdk.CfnOutput(this, "BACKENDURL", {
       value: `http://${env.attrEndpointUrl}`, // URL is available as 'attrEndpointURL'
-      exportName: "BACKEND_URL", // Export it to be used in other stacks (like your pipeline)
+      exportName: "BACKENDURL", // Export it to be used in other stacks (like your pipeline)
     });
   }
 }

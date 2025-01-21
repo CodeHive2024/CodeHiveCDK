@@ -45,7 +45,7 @@ export class UIStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "ServiceAccountIamRole", { value: roleARN });
 
-    const backendURL = cdk.Fn.importValue("BACKEND_URL"); // Import the value from CloudFormation output
+    const backendURL = cdk.Fn.importValue("BACKENDURL"); // Import the value from CloudFormation output
 
     console.log("from cfn output", backendURL);
 
@@ -80,14 +80,14 @@ export class UIStack extends cdk.Stack {
     env.addDependency(app);
 
     // Export the Elastic Beanstalk details for use in the pipeline stack
-    new cdk.CfnOutput(this, "EBAppName", {
+    new cdk.CfnOutput(this, "UIEBAppName", {
       value: app.applicationName!,
-      exportName: "EBAppName",
+      exportName: "UIEBAppName",
     });
 
-    new cdk.CfnOutput(this, "EBEnvName", {
+    new cdk.CfnOutput(this, "UIEBEnvName", {
       value: env.environmentName!,
-      exportName: "EBEnvName",
+      exportName: "UIEBEnvName",
     });
   }
 }
