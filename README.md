@@ -1,6 +1,6 @@
 # This is our cdk repo
-
-The only manual process right now is creating github-token in secrets manager to let source stage in pipeline
+- The purpose of this repo is to create our AWS resources through code. We can tear up and bring back resources with just a few commands as opposed to the long process of interacting with the ui console.
+- The only manual process right now is creating github-token in secrets manager to let source stage in pipeline
 retrieve our source code.
 
 ## Useful commands
